@@ -761,8 +761,10 @@ func (r *HeatReconciler) transportURLCreateOrUpdate(instance *heatv1beta1.Heat) 
 	op, err := controllerutil.CreateOrUpdate(context.TODO(), r.Client, transportURL, func() error {
 		transportURL.Spec.RabbitmqClusterName = instance.Spec.RabbitMqClusterName
 
-		err := controllerutil.SetControllerReference(instance, transportURL, r.Scheme)
-		return fmt.Errorf("Error setting Owner Reference for TransportURL: %w", err)
+		if err := controllerutil.SetControllerReference(instance, transportURL, r.Scheme); err != nil {
+			return fmt.Errorf("Error setting Owner Reference for TransportURL: %w", err)
+		}
+		return nil
 	})
 
 	return transportURL, op, fmt.Errorf("Error while creating TransportURL: %w", err)
