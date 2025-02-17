@@ -534,8 +534,13 @@ func (r *HeatEngineReconciler) reconcileNormal(
 		instance.Status.LastAppliedTopology = ""
 	}
 
+	deplSpec, err := heatengine.Deployment(instance, inputHash, serviceLabels, topology)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+
 	depl := deployment.NewDeployment(
-		heatengine.Deployment(instance, inputHash, serviceLabels, topology),
+		deplSpec,
 		time.Second*5,
 	)
 
